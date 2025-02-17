@@ -21,9 +21,9 @@ jobs:
         cat tunnels.json
       id: ngrok
 
-    - name: Extract TCP URL
+    - name: Extract and Format TCP URL
       run: |
-        export NGROK_TCP_URL=$(cat tunnels.json | jq -r '.tunnels[] | select(.proto=="tcp") | .public_url')
+        export NGROK_TCP_URL=$(cat tunnels.json | jq -r '.tunnels[] | select(.proto=="tcp") | .public_url' | sed 's/tcp:\/\///')
         echo "NGROK_TCP_URL=$NGROK_TCP_URL" >> $GITHUB_ENV
 
     - name: Send Notification to Telegram
@@ -32,4 +32,5 @@ jobs:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         CHAT_ID: ${{ secrets.CHAT_ID }}
       run: |
-        curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" -d "chat_id=${CHAT_ID}&text=Ngrok TCP URL: ${{ env.NGROK_TCP_URL }}"
+        curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+             -d "chat_id=${CHAT_ID}&text=TCP URL: <code>${{ env.NGROK_TCP_URL }}</code>&parse_mode=HTML"
