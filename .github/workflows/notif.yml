@@ -2,9 +2,8 @@ name: Notify Telegram on Ngrok TCP URL
 
 on:
   schedule:
-    - cron: '*/1 * * * *'
-
-workflow_dispatch:
+    - cron: '*/5 * * * *'  # Run every 5 minutes
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   notify-telegram:
